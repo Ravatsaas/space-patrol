@@ -23,46 +23,22 @@ public class NavigationMarker : MonoBehaviour {
         if (target == null)
             return;
 
-        var targetVectorFromCamera = target.transform.position - Camera.main.transform.position;
-
         Vector3 viewSizeInWorld = Camera.main.ViewportToWorldPoint(new Vector3(1, 1)) - Camera.main.ViewportToWorldPoint(new Vector3(0, 0));
-
-        //_rectangleWidth = viewSizeInWorld.x; //target.NavigationMarkerPrefab.GetComponent<RectTransform>().rect.width;
-        //_rectangleHeight = viewSizeInWorld.y; //target.NavigationMarkerPrefab.GetComponent<RectTransform>().rect.height;
-
+        var targetVectorFromCamera = target.transform.position - Camera.main.transform.position;
         var newPosition = FindVectorIntersectionOfConcentricRectangle(targetVectorFromCamera, viewSizeInWorld.x, viewSizeInWorld.y);
         if (newPosition != Vector2.zero)
         {
-            var canvasPoint = WorldToCanvasPoint(GetComponentInParent<Canvas>(), (Vector3)newPosition + Camera.main.transform.position);
+            var markerPositionOnCanvas = WorldToCanvasPoint(GetComponentInParent<Canvas>(), (Vector3)newPosition + Camera.main.transform.position);
+            GetComponent<RectTransform>().anchoredPosition = markerPositionOnCanvas;
 
-            //var screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, newPosition);
-            //RectTransform canvasRect = GetComponentInParent<RectTransform>();
-
-            // Convert to viewport space, subtraction .5 to account for the canvas pivot point being in the center.
-            //Vector2 positionInViewport = Camera.main.WorldToViewportPoint((Vector3)newPosition + Camera.main.transform.position);
-
-            //Vector2 markerPos = new Vector2(positionInViewport.x * canvasRect.sizeDelta.x, positionInViewport.y * canvasRect.sizeDelta.y);
-
-            //var markerPos = Camera.main.WorldToScreenPoint(new Vector3(newPosition.x, newPosition.y) + Camera.main.transform.position);
-            //var markerPos = GetComponentInParent<RectTransform>().InverseTransformVector(new Vector3(newPosition.x, newPosition.y) + Camera.main.transform.position);
-            //var markerPos = new Vector3(newPosition.x, newPosition.y) + Camera.main.transform.position;
-
-            //markerPos.x -= (Camera.main.pixelWidth / 2);
-            //markerPos.y -= (Camera.main.pixelHeight / 2);
-
-            GetComponent<RectTransform>().anchoredPosition = canvasPoint;
-
-            // Set distance
+            // Set distance text
             GetComponentInChildren<Text>().text = Mathf.Round(targetVectorFromCamera.magnitude).ToString();
-
-        
         }
         else
         {
             Debug.LogFormat("Disabled marker");
             GetComponent<RectTransform>().anchoredPosition = new Vector3(-1000, -1000);
         }
-        
 	}
  
     private static Vector2 FindVectorIntersectionOfConcentricRectangle(Vector2 vector, float rectangleWidth, float rectangleHeight)
@@ -104,7 +80,6 @@ public class NavigationMarker : MonoBehaviour {
         // If we have not yet returned, the logic of this method is faulty. We log an error and return null;
         Debug.LogErrorFormat("Intersection of vector [{0},{1}] with rectangle W={2}, H={3} should exist, but was not found.", vector.x, vector.y, rectangleWidth, rectangleHeight);
         return Vector2.zero;
-
     }
 
     public static Vector2 WorldToCanvasPoint(Canvas canvas, Vector3 worldPosition, Camera camera = null)
