@@ -18,7 +18,6 @@ public class NavigationMarker : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
     void Update () {
         if (target == null)
             return;
