@@ -51,8 +51,6 @@ public class Enemy : Spacecraft {
 
         var angularVelocity = GetComponent<Rigidbody2D>().angularVelocity; //deg pr. sec
 
-
-
         // adjust angle
 
         // apply forward thrust if within 5 deg
