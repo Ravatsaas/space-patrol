@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Enemy : Spacecraft {
 
+    private float maxSpeed = 10f;
+    private float maxAngularSpeed = 20f;
     private enum EnemyState { Idle, Navigating, Attacking }
     private EnemyState currentState;
 
@@ -47,21 +49,39 @@ public class Enemy : Spacecraft {
     {
         var currentAngle = transform.rotation.eulerAngles.z;
         var targetAngle = Vector3.Angle(Vector3.up, vector);
-        var angleDiff = currentAngle - targetAngle;
+        var angleDiff = AngleDiff(currentAngle, targetAngle);
+        var angularSpeed = GetComponent<Rigidbody2D>().angularVelocity; //deg pr. sec
+        var forwardSpeed = Vector3.Dot(GetComponent<Rigidbody2D>().velocity, transform.up);
 
-        var angularVelocity = GetComponent<Rigidbody2D>().angularVelocity; //deg pr. sec
+        //Debug.LogFormat("ANGLES: enemy: {0:N}, target: {1:N}, diff: {2:N}", currentAngle, targetAngle, angleDiff);
 
-        // adjust angle
+        // face toward target
+        var targetAngularSpeed = maxAngularSpeed * (angleDiff > 0 ? -1 : 1);
+        // Debug.LogFormat("ROTATION: angular speed: {0:N}, target: {1:N}", angularSpeed, targetAngularSpeed);
+        ApplyTorque(Mathf.Clamp(targetAngularSpeed - angularSpeed, -1, 1));
 
         // apply forward thrust if within 5 deg
-
-        float distance = vector.magnitude;
-        if (Mathf.Abs(angleDiff) < 5)
-        {
+        Debug.LogFormat("forwardSpeed: {0:N}", forwardSpeed);
+        if (Mathf.Abs(angleDiff) < 5 && forwardSpeed < maxSpeed)
             ApplyForwardThrust(1);
-        }
         else
-            ApplyForwardThrust(0);
-        
+            ApplyForwardThrust(0);       
+    }
+
+    /// <summary>
+    /// Returns the difference between two angles in the range -180 to 180 degrees
+    /// </summary>
+    /// <param name="currentAngle"></param>
+    /// <param name="targetAngle"></param>
+    /// <returns></returns>
+    float AngleDiff(float currentAngle, float targetAngle)
+    {
+        if (currentAngle < 0 || currentAngle > 360) throw new System.ArgumentOutOfRangeException("currentAngle", currentAngle, "Should be between 0 and 360");
+        if (targetAngle < 0 || targetAngle > 360) throw new System.ArgumentOutOfRangeException("targetAngle", targetAngle, "Should be between 0 and 360");
+
+        var result = currentAngle - targetAngle;
+        if (result > 180)
+            result -= 360;
+        return result;
     }
 }

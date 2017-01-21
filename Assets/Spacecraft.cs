@@ -36,7 +36,7 @@ public abstract class Spacecraft : NavigatableObject {
 
     protected void ApplyTorque(float torque)
     {
-        rigidbody2d.AddTorque(torque * -1 * angularThrusterPower);
+        rigidbody2d.AddTorque(torque * angularThrusterPower);
     }
 
 }

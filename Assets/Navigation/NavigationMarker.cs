@@ -36,7 +36,6 @@ public class NavigationMarker : MonoBehaviour {
         }
         else
         {
-            Debug.LogFormat("Disabled marker");
             GetComponent<RectTransform>().anchoredPosition = new Vector3(-1000, -1000);
         }
 	}
@@ -72,7 +71,6 @@ public class NavigationMarker : MonoBehaviour {
             var newPos = new Vector2(
                 horizontalIntersectionX,
                 rectangleY * (vector.y < 0 ? -1 : 1));
-            Debug.LogFormat("Intersection of top/bottom at [{0},{1}]", newPos.x, newPos.y);
             return newPos;
         }
 
@@ -85,7 +83,6 @@ public class NavigationMarker : MonoBehaviour {
             var newPos = new Vector2(
                 rectangleX * (vector.x < 0 ? -1 : 1),
                 verticalIntersectionY);
-            Debug.LogFormat("Intersection of left/right at [{0},{1}]", newPos.x, newPos.y);
             return newPos;
         }
 
